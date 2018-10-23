@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/spritea_0" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_1" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_2" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_3" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_4" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_5" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_6" android:duration="750"/>
+    <item android:drawable="@drawable/spritea_0" android:duration="750"/>
+
+</animation-list>

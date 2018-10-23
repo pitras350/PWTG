@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PWTG</string>
+    <string name="logo_gora">Pro Wrestling The Game</string>
+    <string name="new_game">Nowa Gra</string>
+    <string name="options">Opcje</string>
+    <string name="help">Pomoc</string>
+    <string name="credits">Autor</string>
+</resources>
