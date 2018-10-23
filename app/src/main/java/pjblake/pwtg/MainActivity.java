@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        iv1 = findViewById(R.id.test);
-        iv1.setImageResource(R.drawable.powierzchnia);
+        //iv1 = findViewById(R.id.test);
+        //iv1.setImageResource(R.drawable.powierzchnia);
     }
 }
