@@ -10,33 +10,82 @@
     <include
         android:id="@+id/selection_bar"
         layout="@layout/selection_bar"
-        app:layout_constraintBottom_toTopOf="@+id/zmianaAni"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></include>
+
+    <pl.droidsonroids.gif.GifImageButton
+        android:id="@+id/technicalB"
+        android:layout_width="220dp"
+        android:layout_height="240dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="72dp"
+        android:src="@drawable/tcchoice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <pl.droidsonroids.gif.GifImageButton
+        android:id="@+id/powerhouseB"
+        android:layout_width="220dp"
+        android:layout_height="240dp"
+        android:layout_marginStart="368dp"
+
+        android:layout_marginTop="72dp"
+        android:src="@drawable/phchoice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/easy"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="84dp"
+        android:background="@drawable/easy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.497" />
+    <Button
+        android:id="@+id/medium"
+        android:layout_width="150dp"
+        android:layout_height="146dp"
+        android:background="@drawable/medium"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.833"></include>
-
-
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/wrestler1"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="52dp"
-        android:src="@drawable/powerhousechoice"
+        app:layout_constraintVertical_bias="0.497" />
+    <Button
+        android:id="@+id/hard"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/hard"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.127"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selection_bar" />
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/wrestler2"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="52dp"
-        android:src="@drawable/phchoice"
+        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintStart_toEndOf="@+id/medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.497" />
+    <TextView
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.869"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selection_bar" />
+        android:textColor="@color/White"/>
+    <Button
+        android:id="@+id/backselect"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/goback"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
 </android.support.constraint.ConstraintLayout>

@@ -13,13 +13,15 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".CharacterSelection" android:screenOrientation="landscape"></activity>
         <activity android:name=".Options" android:screenOrientation="landscape"></activity>
-        <activity android:name=".Help" android:screenOrientation="landscape"></activity>
+        <activity android:name=".HowTo" android:screenOrientation="landscape"></activity>
+        <activity android:name=".NewGame" android:screenOrientation="landscape"></activity>
+        <activity android:name=".Summary" android:screenOrientation="landscape"></activity>
+        <service android:enabled="true" android:name=".BackgroundSoundService" />
     </application>
 
 </manifest>

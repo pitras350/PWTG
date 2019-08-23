@@ -4,6 +4,18 @@
     <string name="new_game">Nowa Gra</string>
     <string name="options">Opcje</string>
     <string name="character_selection">Wybierz Zawodnika</string>
-    <string name="help">Pomoc</string>
+    <string name="help">Jak Grac</string>
     <string name="credits">Autor</string>
+    <string name="fight">Walka</string>
+    <string name="difficulty">Poziom Trudnosci</string>
+    <string name="player_max_hp">GRACZ: 200/200</string>
+    <string name="enemy_max_hp">RYWAL: 200/200</string>
+    <string name="summary">Podsumowanie</string>
+    <string name="back_to_menu">Powrot do Menu</string>
+    <string name="next_tip">Następna Porada</string>
+    <string name="last_tip">Poprzednia Porada</string>
+    <string name="volume"> Glosnosc </string>
+    <string name="confirm"> Zatwierdz </string>
+    <string name="author"> O Autorze</string>
+    <string name="music"> Autorzy Muzyki</string>
 </resources>

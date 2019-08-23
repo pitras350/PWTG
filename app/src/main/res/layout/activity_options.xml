@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black"
+    tools:context="pjblake.pwtg.CharacterSelection">
+
+    <include
+        android:id="@+id/options_bar"
+        layout="@layout/options_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.833"></include>
+
+    <SeekBar
+        android:id="@+id/seekglos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/Grey"
+        android:max="10"
+        android:minWidth="200dp"
+        android:progress="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:fontFamily="@font/bm"
+        android:text="@string/volume"
+        android:textColor="@color/White"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/confirmation"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/Grey"
+        android:text="@string/confirm"
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekglos" />
+    <Button
+        android:id="@+id/backoptions"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/goback"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </Button>
+
+    <TextView
+        android:id="@+id/textAuthor"
+        android:layout_width="228dp"
+        android:layout_height="76dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="44dp"
+        android:text=""
+        android:textColor="@color/White"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textMusic"
+        android:layout_width="242dp"
+        android:layout_height="77dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="68dp"
+        android:text=""
+        android:textColor="@color/White"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/author"
+        android:layout_width="62dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="136dp"
+        android:background="@color/Grey"
+        android:text="@string/author"
+        android:textColor="@color/White"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/textAuthor"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/musicauthor"
+        android:layout_width="60dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="136dp"
+        android:background="@color/Grey"
+        android:text="@string/music"
+        android:textColor="@color/White"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/textMusic"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>
