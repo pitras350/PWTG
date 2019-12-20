@@ -23,6 +23,7 @@ import pl.droidsonroids.gif.GifImageView;
 public class NewGame extends AppCompatActivity {
     int click=0;
     int PA=3;
+    int start=0;
     int inicjatywa;
     int ataka,atakb,atakc,atakd;
     int a, b, c,d;
@@ -34,7 +35,7 @@ public class NewGame extends AppCompatActivity {
         final String str = getIntent().getStringExtra("wrestler");
         final String str1 = getIntent().getStringExtra("difficulty");
         final int sound = getIntent().getIntExtra("sound",0);
-        Random rand = new Random();
+        final Random rand = new Random();
         final Button b1 = findViewById(R.id.choice1);
         final Button b2 = findViewById(R.id.choice2);
         final Button b3 = findViewById(R.id.choice3);
@@ -45,75 +46,25 @@ public class NewGame extends AppCompatActivity {
         final GifImageView iv = findViewById(R.id.tlo);
         Intent svc=new Intent(this, BackgroundSoundService.class);
         startService(svc);
-        //BackgroundSoundService.changeSong(1,this);
-        //przerzucić do bazy danych
-        //lista ataków
         final int hpP = 200, hpE = 200;
         int value = 0;
         int atak = 0;
-        inicjatywa = rand.nextInt(2);
-        int i = 0;
+        b1.setVisibility(View.INVISIBLE);
+        b2.setVisibility(View.INVISIBLE);
+        b3.setVisibility(View.INVISIBLE);
+        b4.setVisibility(View.VISIBLE);
+        /* announcer stage */
+        iv.setImageResource(R.drawable.announcer);
+        b4.setText("Dalej");
+        String l = "To starcie odbędzie się na standardowych zasadach i zwycięzca zostanie mistrzem PWTG";
+        tv.setText(l);
         final ProgressBar hpPlayer = findViewById(R.id.hpplayer);
         hpPlayer.setScaleY(5f);
         hpPlayer.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
         final ProgressBar hpEnemy = findViewById(R.id.hpenemy);
         hpEnemy.setScaleY(5f);
         hpEnemy.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-        if (str1.equals("E")) {
-            inicjatywa = 0;
-        } else if (str1.equals("H")) {
-            inicjatywa = 1;
-        }
-        if (inicjatywa == 0) // rzut na inicjatywę
-        {
 
-            if (str.equals("PH")) {
-                iv.setImageResource(R.drawable.phbg);
-            } else {
-                iv.setImageResource(R.drawable.tcbg);
-            }
-            tv.setBackgroundColor(Color.BLACK);
-            String l = "Po szybkim zmierzeniu wzrokiem rywala udało Ci się wyprowadzić pierwszy ruch.";
-            tv.setText(l);
-        }
-        else {
-            b1.setVisibility(View.INVISIBLE);
-            b2.setVisibility(View.INVISIBLE);
-            b3.setVisibility(View.INVISIBLE);
-            b4.setVisibility(View.VISIBLE);
-            b4.setText("Następna akcja");
-            if (str.equals("TC")) {
-                iv.setImageResource(R.drawable.phbg);
-            } else {
-                iv.setImageResource(R.drawable.tcbg);
-            }
-            tv.setBackgroundColor(Color.BLACK);
-            String l = "Rywal wydaje się groźny i to on jako pierwszy zaskakuje Cię atakiem!";
-            tv.setText(l);
-            PA=0;
-        }
-        a=rand.nextInt(10); b = rand.nextInt(10); c=rand.nextInt(10); d=rand.nextInt(10);
-        if(a==b) {
-            do { b = rand.nextInt(10); }
-            while(a==b || b==c);
-        }
-        if(b==c) {
-            do { c = rand.nextInt(10); }
-            while(b==c || c==a);
-        }
-        if(a==c) {
-            do { a = rand.nextInt(10); }
-            while(a==c || a==b);
-        }
-        b1.setText(jakiAtak(a));
-        b2.setText(jakiAtak(b));
-        b3.setText(jakiAtak(c));
-        ataka = poziomTrundosci(str1,"P",silaAtaku(str,a));
-        atakb = poziomTrundosci(str1,"P",silaAtaku(str,b));
-        atakc = poziomTrundosci(str1,"P",silaAtaku(str,c));
-        atakd = poziomTrundosci(str1,"E",silaAtaku(str,d));
-        hpMine.setText(R.string.player_max_hp);
-        hpRival.setText(R.string.enemy_max_hp);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,7 +77,7 @@ public class NewGame extends AppCompatActivity {
                 hpRival.setText(noweZycieRywala);
                 Random rand = new Random();
                 zmianaTla(a,str);
-                tv.setText(jakiAtak(a));
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(a));
                 listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(a)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,a)))+ " punktów obrażeń");
                 if(hpEnemy.getProgress()>140) {
                     a = rand.nextInt(10);
@@ -293,7 +244,7 @@ public class NewGame extends AppCompatActivity {
                 hpRival.setText(noweZycieRywala);
                 Random rand = new Random();
                 zmianaTla(b,str);
-                tv.setText(jakiAtak(b));
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(b));
                 listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(b)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,b)))+ " punktów obrażeń");
                 if(hpEnemy.getProgress()>140) {
                     a = rand.nextInt(10);
@@ -460,7 +411,7 @@ public class NewGame extends AppCompatActivity {
                 String noweZycieRywala = "RYWAL: " + Integer.toString(hpEnemy.getProgress()) + "/" + hpE;
                 hpRival.setText(noweZycieRywala);
                 zmianaTla(c,str);
-                tv.setText(jakiAtak(c));
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(c));
                 listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(c)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,c)))+ " punktów obrażeń");
                 Random rand = new Random();
                 if(hpEnemy.getProgress()>140) {
@@ -619,8 +570,112 @@ public class NewGame extends AppCompatActivity {
         b4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(start==0)
+                {
+                    String l="";
+                    b4.setText("Dalej");
+                    if(str.equals("TC"))
+                    {
+                        iv.setImageResource(R.drawable.tcentry);
+                        l = "Pierwszym zawodnikiem będzie uosobienie umiejętności ringowych - Technician!";
+                    }
+                    else{
+                        iv.setImageResource(R.drawable.phentry);
+                        l = "Pierwszym zawodnikiem będzie najsilniejszy człowiek świata - Powerhouse!";
+                    }
+                    tv.setText(l);
+                    start++;
+                }
+                else if(start==1)
+                {
+                    String l="";
+                    b4.setText("Dalej");
+                    if(str.equals("TC"))
+                    {
+                        iv.setImageResource(R.drawable.phentry);
+                        l = "Jego rywalem będzie najsilniejszy człowiek świata - Powerhouse!";
+                    }
+                    else{
+                        iv.setImageResource(R.drawable.tcentry);
+                        l = "Jego rywalem będzie uosobienie umiejętności ringowych - Technician!";
+                    }
+                    tv.setText(l);
+                    start++;
+                }
+                else if(start==2) {
+                    inicjatywa = rand.nextInt(2);
+                    if (str1.equals("E")) {
+                        inicjatywa = 0;
+                    } else if (str1.equals("H")) {
+                        inicjatywa = 1;
+                    }
+                    if (inicjatywa == 0) // rzut na inicjatywę
+                    {
+                        b1.setVisibility(View.VISIBLE);
+                        b2.setVisibility(View.VISIBLE);
+                        b3.setVisibility(View.VISIBLE);
+                        b4.setVisibility(View.INVISIBLE);
+                        if (str.equals("PH")) {
+                            iv.setImageResource(R.drawable.phbg);
+                        } else {
+                            iv.setImageResource(R.drawable.tcbg);
+                        }
+                        tv.setBackgroundColor(Color.BLACK);
+                        String k = "Po szybkim zmierzeniu wzrokiem rywala udało Ci się wyprowadzić pierwszy ruch.";
+                        tv.setText(k);
+                        PA = 3;
+                    } else {
+                        b1.setVisibility(View.INVISIBLE);
+                        b2.setVisibility(View.INVISIBLE);
+                        b3.setVisibility(View.INVISIBLE);
+                        b4.setVisibility(View.VISIBLE);
+                        b4.setText("Następna akcja");
+                        if (str.equals("TC")) {
+                            iv.setImageResource(R.drawable.phbg);
+                        } else {
+                            iv.setImageResource(R.drawable.tcbg);
+                        }
+                        tv.setBackgroundColor(Color.BLACK);
+                        String k = "Rywal wydaje się groźny i to on jako pierwszy zaskakuje Cię atakiem!";
+                        tv.setText(k);
+                        PA = 0;
+                    }
+                    a = rand.nextInt(10);
+                    b = rand.nextInt(10);
+                    c = rand.nextInt(10);
+                    d = rand.nextInt(10);
+                    if (a == b) {
+                        do {
+                            b = rand.nextInt(10);
+                        }
+                        while (a == b || b == c);
+                    }
+                    if (b == c) {
+                        do {
+                            c = rand.nextInt(10);
+                        }
+                        while (b == c || c == a);
+                    }
+                    if (a == c) {
+                        do {
+                            a = rand.nextInt(10);
+                        }
+                        while (a == c || a == b);
+                    }
+                    b1.setText(jakiAtak(a));
+                    b2.setText(jakiAtak(b));
+                    b3.setText(jakiAtak(c));
+                    ataka = poziomTrundosci(str1, "P", silaAtaku(str, a));
+                    atakb = poziomTrundosci(str1, "P", silaAtaku(str, b));
+                    atakc = poziomTrundosci(str1, "P", silaAtaku(str, c));
+                    atakd = poziomTrundosci(str1, "E", silaAtaku(str, d));
+                    hpMine.setText(R.string.player_max_hp);
+                    hpRival.setText(R.string.enemy_max_hp);
+                    start++;
+                }
+                else{
                 int hpT=hpPlayer.getProgress();
-                hpT=hpT-atakd; //póki co będzie atakować tylko 3 atakiem
+                hpT=hpT-atakd;
                 hpPlayer.setProgress(hpT);
                 String noweZycieMoje = "GRACZ: " + Integer.toString(hpPlayer.getProgress()) + "/" + hpP;
                 hpMine.setText(noweZycieMoje);
@@ -637,7 +692,7 @@ public class NewGame extends AppCompatActivity {
                 {
                     zmianaTla(d,"PH");
                 }
-                tv.setText(jakiAtak(d));
+                tv.setText("Rywal wykonał: "+ jakiAtak(d));
                 listOfMoves.add("Twój rywal wykonał: "+ jakiAtak(d)+ " za " + Integer.toString(poziomTrundosci(str1,"E",silaAtaku(str,a)))+ " punktów obrażeń");
                 if(hpPlayer.getProgress()>140) {
                     d = rand.nextInt(10);
@@ -742,7 +797,25 @@ public class NewGame extends AppCompatActivity {
                                 intent.putExtra("sound",sound);
                                 startActivity(intent);
                             }
-                        });} } } });
+                        });} } } } });
+    }
+    @Override
+    protected  void onResume()
+    {
+        BackgroundSoundService.resume();
+        super.onResume();
+    }
+    @Override
+    protected void onPause()
+    {
+        BackgroundSoundService.pause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy(){
+        Intent svc = new Intent(this,BackgroundSoundService.class);
+        stopService(svc);
+        super.onDestroy();
     }
     void zmianaTla(int v, String str)
     {
@@ -759,7 +832,7 @@ public class NewGame extends AppCompatActivity {
                         break;
                     }
                     case 2: {
-                        iv.setImageResource(R.drawable.chopp);
+                        iv.setImageResource(R.drawable.chopchestp);
                         break;
                     }
                     case 3: {
@@ -823,23 +896,53 @@ public class NewGame extends AppCompatActivity {
                         break;
                     }
                     case 18: {
-                        iv.setImageResource(R.drawable.enzuigirip);
+                        iv.setImageResource(R.drawable.enzugirip);
                         break;
                     }
                     case 19: {
                         iv.setImageResource(R.drawable.shoulderblockp);
                         break;
                     }
-                /*case 20: {break;}
-                case 21: {break;}
-                case 22: {break;}
-                case 23: {break;}
-                case 24: {break;}
-                case 25: {break;}
-                case 26: {break;}
-                case 27: {break;}
-                case 28: {break;}
-                case 29: {break;}*/
+                    case 20: {
+                        iv.setImageResource(R.drawable.spearp);
+                        break;
+                    }
+                    case 21: {
+                        iv.setImageResource(R.drawable.bigsplashp);
+                        break;
+                    }
+                    case 22: {
+                        iv.setImageResource(R.drawable.crossbodyp);
+                        break;
+                    }
+                    case 23: {
+                        iv.setImageResource(R.drawable.backbreakerp);
+                        break;
+                    }
+                    case 24: {
+                        iv.setImageResource(R.drawable.bulldogp);
+                        break;
+                    }
+                    case 25: {
+                        iv.setImageResource(R.drawable.chokeslamp);
+                        break;
+                    }
+                    case 26: {
+                        iv.setImageResource(R.drawable.firemanscarryp);
+                        break;
+                    }
+                    case 27: {
+                        iv.setImageResource(R.drawable.cutterp);
+                        break;
+                    }
+                    case 28: {
+                        iv.setImageResource(R.drawable.powerbombp);
+                        break;
+                    }
+                    case 29: {
+                        iv.setImageResource(R.drawable.kneelingpiledriverp);
+                        break;
+                    }
                     default: {
                         iv.setImageResource(R.drawable.phbg);
                         break;
@@ -848,45 +951,126 @@ public class NewGame extends AppCompatActivity {
             }
             else {
                 switch (v) {
-                 /*   case 0: {
-                        iv.setImageResource(R.drawable.newpunch);
+                    case 0: {
+                        iv.setImageResource(R.drawable.puncht);
                         break;
                     }
                     case 1: {
-                        iv.setImageResource(R.drawable.newkick);
+                        iv.setImageResource(R.drawable.kickt);
                         break;
                     }
                     case 2: {
-                        iv.setImageResource(R.drawable.chopoh);
+                        iv.setImageResource(R.drawable.chopchestt);
                         break;
                     }
-                case 3: {break;}
-                case 4: {break;}
-                case 5: {break;}
-                case 6: {break;}
-                case 7: {break;}
-                case 8: {break;}
-                case 9: {break;}
-                case 10: {break;}
-                case 11: {break;}
-                case 12: {break;}
-                case 13: {break;}
-                case 14: {break;}
-                case 15: {break;}
-                case 16: {break;}
-                case 17: {break;}
-                case 18: {break;}
-                case 19: {break;}
-                case 20: {break;}
-                case 21: {break;}
-                case 22: {break;}
-                case 23: {break;}
-                case 24: {break;}
-                case 25: {break;}
-                case 26: {break;}
-                case 27: {break;}
-                case 28: {break;}
-                case 29: {break;}*/
+                    case 3: {
+                        iv.setImageResource(R.drawable.elbowt);
+                        break;
+                    }
+                    case 4: {
+                        iv.setImageResource(R.drawable.kneet);
+                        break;
+                    }
+                    case 5: {
+                        iv.setImageResource(R.drawable.slapt);
+                        break;
+                    }
+                    case 6: {
+                        iv.setImageResource(R.drawable.backelbowt);
+                        break;
+                    }
+                    case 7: {
+                        iv.setImageResource(R.drawable.lowkickt);
+                        break;
+                    }
+                    case 8: {
+                        iv.setImageResource(R.drawable.gutpuncht);
+                        break;
+                    }
+                    case 9: {
+                        iv.setImageResource(R.drawable.headbuttt);
+                        break;
+                    }
+                    case 10: {
+                        iv.setImageResource(R.drawable.lariatt);
+                        break;
+                    }
+                    case 11: {
+                        iv.setImageResource(R.drawable.scoopslamt);
+                        break;
+                    }
+                    case 12: {
+                        iv.setImageResource(R.drawable.suplext);
+                        break;
+                    }
+                    case 13: {
+                        iv.setImageResource(R.drawable.clotheslinet);
+                        break;
+                    }
+                    case 14: {
+                        iv.setImageResource(R.drawable.dropkickt);
+                        break;
+                    }
+                    case 15: {
+                        iv.setImageResource(R.drawable.ddtt);
+                        break;
+                    }
+                    case 16: {
+                        iv.setImageResource(R.drawable.neckbreakert);
+                        break;
+                    }
+                    case 17: {
+                        iv.setImageResource(R.drawable.bigboott);
+                        break;
+                    }
+                    case 18: {
+                        iv.setImageResource(R.drawable.enzugirit);
+                        break;
+                    }
+                    case 19: {
+                        iv.setImageResource(R.drawable.shoulderblockt);
+                        break;
+                    }
+                    case 20: {
+                        iv.setImageResource(R.drawable.speart);
+                        break;
+                    }
+                    case 21: {
+                        iv.setImageResource(R.drawable.bigsplasht);
+                        break;
+                    }
+                    case 22: {
+                        iv.setImageResource(R.drawable.crossbodyt);
+                        break;
+                    }
+                    case 23: {
+                        iv.setImageResource(R.drawable.backbreakert);
+                        break;
+                    }
+                    case 24: {
+                        iv.setImageResource(R.drawable.bulldogt);
+                        break;
+                    }
+                    case 25: {
+                        iv.setImageResource(R.drawable.chokeslamt);
+                        break;
+                    }
+                    case 26: {
+                        iv.setImageResource(R.drawable.firemanscarryt);
+                        break;
+                    }
+                    case 27: {
+                        iv.setImageResource(R.drawable.cuttert);
+                        break;
+                    }
+                    case 28: {
+                        iv.setImageResource(R.drawable.powerbombt);
+                        break;
+                    }
+                    case 29: {
+                        iv.setImageResource(R.drawable.kneelingpiledrivert);
+                        break;
+                    }
                     default: {
                         iv.setImageResource(R.drawable.tcbg);
                         break;
@@ -917,7 +1101,7 @@ public class NewGame extends AppCompatActivity {
         listaakcji.add(16,"Neckbreaker");
         listaakcji.add(17,"Big boot");
         listaakcji.add(18,"Enzugiri");
-        listaakcji.add(19,"Shoulder block"); //gotowe - przesunąć gdy zrobie nowe animacje
+        listaakcji.add(19,"Shoulder block");
 
         listaakcji.add(20,"Spear");
         listaakcji.add(21,"Big splash");
@@ -1028,7 +1212,7 @@ public class NewGame extends AppCompatActivity {
                 break;
             }
             case 16: {
-                atak = rand.nextInt(4)+8; //8-11 neckbreaker
+                atak = rand.nextInt(4)+7; //7-10 neckbreaker
                 break;
             }
             case 17: {
@@ -1089,3 +1273,42 @@ public class NewGame extends AppCompatActivity {
     }
 }
 
+
+         /* if(start==1) {
+              String l="";
+              b4.setText("Dalej");
+              if(str.equals("TC"))
+              {
+                  iv.setImageResource(R.drawable.tcentry);
+                  l = "Pierwszym zawodnikiem będzie uosobienie umiejętności ringowych - Technician!";
+              }
+              else{
+                  iv.setImageResource(R.drawable.phentry);
+                  l = "Pierwszym zawodnikiem będzie najsilniejszy człowiek świata - Powerhouse!";
+              }
+              tv.setText(l);
+              b4.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View view) {
+
+                  }}); }
+            if(start==2)
+            {
+                String l="";
+                b4.setText("Dalej");
+                if(str.equals("TC"))
+                {
+                    iv.setImageResource(R.drawable.phentry);
+                    l = "Jego rywalem będzie najsilniejszy człowiek świata - Powerhouse!";
+                }
+                else{
+                    iv.setImageResource(R.drawable.tcentry);
+                    l = "Jego rywalem będzie uosobienie umiejętności ringowych - Technician!";
+                }
+                tv.setText(l);
+                b4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }}); }
+            start++;} */

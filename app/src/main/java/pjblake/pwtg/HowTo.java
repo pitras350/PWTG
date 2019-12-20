@@ -81,5 +81,23 @@ public class HowTo extends AppCompatActivity{
             }
         });
     }
+    @Override
+    protected  void onResume()
+    {
+        BackgroundSoundService.resume();
+        super.onResume();
+    }
+    @Override
+    protected void onPause()
+    {
+        BackgroundSoundService.pause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy(){
+        Intent svc = new Intent(this,BackgroundSoundService.class);
+        stopService(svc);
+        super.onDestroy();
+    }
 }
 

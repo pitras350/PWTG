@@ -111,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause()
     {
         BackgroundSoundService.pause();
-        //Intent svc = new Intent(this,BackgroundSoundService.class);
-        //stopService(svc);
         super.onPause();
     }
     @Override
