@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class HowTo extends AppCompatActivity{
 
     int i=0;
+    int x=0;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -22,6 +23,9 @@ public class HowTo extends AppCompatActivity{
         final TextView tv = findViewById(R.id.tv1);
         bt2.setVisibility(View.INVISIBLE);
         Button bt3 = findViewById(R.id.backhowto);
+        int sound = getIntent().getIntExtra("sound",5);
+        if(sound==0) { BackgroundSoundService.pause(); }
+        else { BackgroundSoundService.resume();}
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,8 +88,11 @@ public class HowTo extends AppCompatActivity{
     @Override
     protected  void onResume()
     {
-        BackgroundSoundService.resume();
         super.onResume();
+        if(x>0) {
+            BackgroundSoundService.resume();
+        }
+        x++;
     }
     @Override
     protected void onPause()

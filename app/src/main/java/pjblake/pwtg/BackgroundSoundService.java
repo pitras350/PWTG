@@ -24,6 +24,7 @@ public class BackgroundSoundService extends Service {
     static ArrayList<Integer> playlist;
     static Timer timer;
 
+
     public IBinder onBind(Intent arg0) {
 
         return null;
@@ -32,13 +33,9 @@ public class BackgroundSoundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Random rand = new Random();
-        int c = rand.nextInt(2);
-
         player = MediaPlayer.create(this,R.raw.main);
         player.setVolume(0.25f,0.25f);
-        player.setLooping(true);
-        //timer = new Timer();
+        player.setLooping(false);
     }
     public int onStartCommand(Intent intent, int flags, int startId) {
         player.start();
@@ -49,16 +46,6 @@ public class BackgroundSoundService extends Service {
         // TO DO Auto-generated method
         return null;
     }
-    /*
-    public void onStop() {
-        player.pause();
-        player.release();
-
-    }
-    public static void onPause() {
-        player.pause();
-        player.release();
-    }*/
     @Override
     public void onDestroy() {
        // player.stop();
@@ -83,14 +70,56 @@ public class BackgroundSoundService extends Service {
     {
         player.setVolume(a,b);
     }
-    public static void finito()
+    public static int changeSong(Context con, int a, int sound)
     {
-        player.setVolume(0,0);
-        player.stop();
-        player.reset();
-        player.release();
-        player = null;
+        switch(a)
+        {
+            case 0: {
+                player.release();
+                player = MediaPlayer.create(con,R.raw.powerhouse);
+                player.setLooping(false);
+                player.start();
+                updateSound(sound/20f,sound/20f);
+                return 1;
+            }
+            case 1: {
+                player.release();
+                player = MediaPlayer.create(con,R.raw.technic);
+                player.setLooping(false);
+                player.start();
+                updateSound(sound/20f,sound/20f);
+                return 2;
+            }
+            case 2: {
+                player.release();
+                player = MediaPlayer.create(con,R.raw.fightother);
+                player.setLooping(true);
+                player.start();
+                updateSound(sound/20f,sound/20f);
+                return 3;
+            }
+            case 3: {
+                player.release();
+                player = MediaPlayer.create(con,R.raw.fight);
+                player.setLooping(true);
+                player.start();
+                updateSound(sound/20f,sound/20f);
+                return 4;
+            }
+            case 4: {
+                player.release();
+                player = MediaPlayer.create(con,R.raw.main);
+                player.setLooping(false);
+                player.start();
+                updateSound(sound/20f,sound/20f);
+                return 5;
+            }
+            default:
+            {
+                break;
+            }
+        }
+            return 0;
     }
-
 
 }

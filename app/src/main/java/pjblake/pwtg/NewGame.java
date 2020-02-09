@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 
@@ -26,7 +29,10 @@ public class NewGame extends AppCompatActivity {
     int start=0;
     int inicjatywa;
     int ataka,atakb,atakc,atakd;
-    int a, b, c,d;
+    int a,b,c,d;
+    int xd;
+    int x=0;
+    int sound;
     ArrayList<String> listOfMoves = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,7 @@ public class NewGame extends AppCompatActivity {
         setContentView(R.layout.activity_new_game);
         final String str = getIntent().getStringExtra("wrestler");
         final String str1 = getIntent().getStringExtra("difficulty");
-        final int sound = getIntent().getIntExtra("sound",0);
+        sound = getIntent().getIntExtra("sound",5);
         final Random rand = new Random();
         final Button b1 = findViewById(R.id.choice1);
         final Button b2 = findViewById(R.id.choice2);
@@ -44,17 +50,24 @@ public class NewGame extends AppCompatActivity {
         final TextView hpRival = findViewById(R.id.punktyzdrowiaENEMY);
         final TextView hpMine = findViewById(R.id.punktyzdrowiaPLAYER);
         final GifImageView iv = findViewById(R.id.tlo);
-        Intent svc=new Intent(this, BackgroundSoundService.class);
-        startService(svc);
         final int hpP = 200, hpE = 200;
         int value = 0;
         int atak = 0;
         b1.setVisibility(View.INVISIBLE);
         b2.setVisibility(View.INVISIBLE);
         b3.setVisibility(View.INVISIBLE);
-        b4.setVisibility(View.VISIBLE);
+        b4.setVisibility(View.INVISIBLE);
+        if(sound==0) { BackgroundSoundService.pause(); }
+        else { BackgroundSoundService.resume();}
         /* announcer stage */
         iv.setImageResource(R.drawable.announcer);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                b4.setVisibility(View.VISIBLE);
+            }
+        }, 5000);
         b4.setText("Dalej");
         String l = "To starcie odbędzie się na standardowych zasadach i zwycięzca zostanie mistrzem PWTG";
         tv.setText(l);
@@ -68,7 +81,32 @@ public class NewGame extends AppCompatActivity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(PA!=1) {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.VISIBLE);
+                            b2.setVisibility(View.VISIBLE);
+                            b3.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
+                }
+                else
+                {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                }
                 int hpT = hpEnemy.getProgress();
+                int hpTT = hpPlayer.getProgress();
+                if(sound==0){int xd=7;}
+                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT = hpT - ataka;
                 hpEnemy.setProgress(hpT);
                 if (hpEnemy.getProgress() <= 133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
@@ -78,7 +116,7 @@ public class NewGame extends AppCompatActivity {
                 Random rand = new Random();
                 zmianaTla(a,str);
                 tv.setText("Twój zawodnik wykonał: " + jakiAtak(a));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(a)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,a)))+ " punktów obrażeń");
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(a)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(a)))+ " punktów obrażeń");
                 if(hpEnemy.getProgress()>140) {
                     a = rand.nextInt(10);
                     b = rand.nextInt(10);
@@ -138,104 +176,231 @@ public class NewGame extends AppCompatActivity {
                 b1.setText(jakiAtak(a));
                 b2.setText(jakiAtak(b));
                 b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(str,a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(str,b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(str,c));
+                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
+                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
+                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
                 PA--;
                 if (PA == 0) {
                     inicjatywa = 1;
-                    b1.setVisibility(View.INVISIBLE);
-                    b2.setVisibility(View.INVISIBLE);
-                    b3.setVisibility(View.INVISIBLE);
-                    b4.setVisibility(View.VISIBLE);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.INVISIBLE);
+                            b2.setVisibility(View.INVISIBLE);
+                            b3.setVisibility(View.INVISIBLE);
+                            b4.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
                     b4.setText("Następna akcja");
                     }
                 if (hpPlayer.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.tcwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);;
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} }
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }}
                 if (hpEnemy.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(), Summary.class);
-                                intent.putExtra("difficulty", str1);
-                                intent.putExtra("hpE", hpEnemy.getProgress());
-                                intent.putExtra("hpP", hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji", listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} } } });
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
+                }}});
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int hpT=hpEnemy.getProgress();
+                if(PA!=1) {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.VISIBLE);
+                            b2.setVisibility(View.VISIBLE);
+                            b3.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
+                }
+                else
+                {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                }
+                int hpT = hpEnemy.getProgress();
+                int hpTT = hpPlayer.getProgress();
+                if(sound==0){int xd=7;}
+                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakb;
                 hpEnemy.setProgress(hpT);
                 if(hpEnemy.getProgress()<=133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
@@ -245,7 +410,7 @@ public class NewGame extends AppCompatActivity {
                 Random rand = new Random();
                 zmianaTla(b,str);
                 tv.setText("Twój zawodnik wykonał: " + jakiAtak(b));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(b)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,b)))+ " punktów obrażeń");
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(b)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(b)))+ " punktów obrażeń");
                 if(hpEnemy.getProgress()>140) {
                     a = rand.nextInt(10);
                     b = rand.nextInt(10);
@@ -305,105 +470,232 @@ public class NewGame extends AppCompatActivity {
                 b1.setText(jakiAtak(a));
                 b2.setText(jakiAtak(b));
                 b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(str,a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(str,b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(str,c));
+                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
+                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
+                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
 
                 PA--;
                 if (PA == 0) {
                     inicjatywa = 1;
-                    b1.setVisibility(View.INVISIBLE);
-                    b2.setVisibility(View.INVISIBLE);
-                    b3.setVisibility(View.INVISIBLE);
-                    b4.setVisibility(View.VISIBLE);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.INVISIBLE);
+                            b2.setVisibility(View.INVISIBLE);
+                            b3.setVisibility(View.INVISIBLE);
+                            b4.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
                     b4.setText("Następna akcja");
                 }
                 if (hpPlayer.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.tcwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} }
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }}
                 if (hpEnemy.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} } } });
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
+                }}});
         b3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int hpT=hpEnemy.getProgress();
+                if(PA!=1) {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.VISIBLE);
+                            b2.setVisibility(View.VISIBLE);
+                            b3.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
+                }
+                else
+                {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                }
+                int hpT = hpEnemy.getProgress();
+                int hpTT = hpPlayer.getProgress();
+                if(sound==0){int xd=7;}
+                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakc;
                 hpEnemy.setProgress(hpT);
                 if(hpEnemy.getProgress()<=133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
@@ -412,7 +704,7 @@ public class NewGame extends AppCompatActivity {
                 hpRival.setText(noweZycieRywala);
                 zmianaTla(c,str);
                 tv.setText("Twój zawodnik wykonał: " + jakiAtak(c));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(c)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(str,c)))+ " punktów obrażeń");
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(c)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(c)))+ " punktów obrażeń");
                 Random rand = new Random();
                 if(hpEnemy.getProgress()>140) {
                     a = rand.nextInt(10);
@@ -473,113 +765,230 @@ public class NewGame extends AppCompatActivity {
                 b1.setText(jakiAtak(a));
                 b2.setText(jakiAtak(b));
                 b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(str,a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(str,b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(str,c));
+                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
+                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
+                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
                 PA--;
                 if (PA == 0) {
                     inicjatywa = 1;
-                    b1.setVisibility(View.INVISIBLE);
-                    b2.setVisibility(View.INVISIBLE);
-                    b3.setVisibility(View.INVISIBLE);
-                    b4.setVisibility(View.VISIBLE);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.INVISIBLE);
+                            b2.setVisibility(View.INVISIBLE);
+                            b3.setVisibility(View.INVISIBLE);
+                            b4.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
                     b4.setText("Następna akcja");
                 }
                 if (hpPlayer.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.tcwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} }
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }}
                 if (hpEnemy.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} } } });
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.INVISIBLE);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                b1.setVisibility(View.INVISIBLE);
+                                                b2.setVisibility(View.INVISIBLE);
+                                                b3.setVisibility(View.INVISIBLE);
+                                                b4.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 5000);
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
+                }}});
         b4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(start==0)
                 {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b4.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
                     String l="";
                     b4.setText("Dalej");
                     if(str.equals("TC"))
                     {
+                        if(sound==0){int xd=7;}
+                        else{int xd = new BackgroundSoundService().changeSong(NewGame.this,1,sound);}
                         iv.setImageResource(R.drawable.tcentry);
                         l = "Pierwszym zawodnikiem będzie uosobienie umiejętności ringowych - Technician!";
                     }
                     else{
+                        if(sound==0){int xd=7;}
+                        else{int xd = new BackgroundSoundService().changeSong(NewGame.this,0,sound);}
                         iv.setImageResource(R.drawable.phentry);
                         l = "Pierwszym zawodnikiem będzie najsilniejszy człowiek świata - Powerhouse!";
                     }
@@ -588,14 +997,31 @@ public class NewGame extends AppCompatActivity {
                 }
                 else if(start==1)
                 {
+                    b1.setVisibility(View.INVISIBLE);
+                    b2.setVisibility(View.INVISIBLE);
+                    b3.setVisibility(View.INVISIBLE);
+                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b4.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000);
                     String l="";
                     b4.setText("Dalej");
                     if(str.equals("TC"))
                     {
+                        Log.i("test",String.valueOf(sound));
+                        if(sound==0){int xd=7;}
+                        else{int xd = new BackgroundSoundService().changeSong(NewGame.this,0,sound);}
                         iv.setImageResource(R.drawable.phentry);
                         l = "Jego rywalem będzie najsilniejszy człowiek świata - Powerhouse!";
                     }
                     else{
+                        Log.i("test",String.valueOf(sound));
+                        if(sound==0){int xd=7;}
+                        else{int xd = new BackgroundSoundService().changeSong(NewGame.this,1,sound);}
                         iv.setImageResource(R.drawable.tcentry);
                         l = "Jego rywalem będzie uosobienie umiejętności ringowych - Technician!";
                     }
@@ -603,6 +1029,8 @@ public class NewGame extends AppCompatActivity {
                     start++;
                 }
                 else if(start==2) {
+                    if(sound==0){int xd=7;}
+                    else{int xd = new BackgroundSoundService().changeSong(NewGame.this,2,sound);}
                     inicjatywa = rand.nextInt(2);
                     if (str1.equals("E")) {
                         inicjatywa = 0;
@@ -611,10 +1039,19 @@ public class NewGame extends AppCompatActivity {
                     }
                     if (inicjatywa == 0) // rzut na inicjatywę
                     {
-                        b1.setVisibility(View.VISIBLE);
-                        b2.setVisibility(View.VISIBLE);
-                        b3.setVisibility(View.VISIBLE);
+                        b1.setVisibility(View.INVISIBLE);
+                        b2.setVisibility(View.INVISIBLE);
+                        b3.setVisibility(View.INVISIBLE);
                         b4.setVisibility(View.INVISIBLE);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.VISIBLE);
+                                b2.setVisibility(View.VISIBLE);
+                                b3.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
                         if (str.equals("PH")) {
                             iv.setImageResource(R.drawable.phbg);
                         } else {
@@ -628,7 +1065,14 @@ public class NewGame extends AppCompatActivity {
                         b1.setVisibility(View.INVISIBLE);
                         b2.setVisibility(View.INVISIBLE);
                         b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
+                        b4.setVisibility(View.INVISIBLE);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
                         b4.setText("Następna akcja");
                         if (str.equals("TC")) {
                             iv.setImageResource(R.drawable.phbg);
@@ -665,16 +1109,39 @@ public class NewGame extends AppCompatActivity {
                     b1.setText(jakiAtak(a));
                     b2.setText(jakiAtak(b));
                     b3.setText(jakiAtak(c));
-                    ataka = poziomTrundosci(str1, "P", silaAtaku(str, a));
-                    atakb = poziomTrundosci(str1, "P", silaAtaku(str, b));
-                    atakc = poziomTrundosci(str1, "P", silaAtaku(str, c));
-                    atakd = poziomTrundosci(str1, "E", silaAtaku(str, d));
+                    ataka = poziomTrundosci(str1, "P", silaAtaku(a));
+                    atakb = poziomTrundosci(str1, "P", silaAtaku(b));
+                    atakc = poziomTrundosci(str1, "P", silaAtaku(c));
+                    atakd = poziomTrundosci(str1, "E", silaAtaku(d));
                     hpMine.setText(R.string.player_max_hp);
                     hpRival.setText(R.string.enemy_max_hp);
                     start++;
                 }
                 else{
+                    if(PA!=2) {
+                        b1.setVisibility(View.INVISIBLE);
+                        b2.setVisibility(View.INVISIBLE);
+                        b3.setVisibility(View.INVISIBLE);
+                        b4.setVisibility(View.INVISIBLE);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                    }
+                    else
+                    {
+                        b1.setVisibility(View.INVISIBLE);
+                        b2.setVisibility(View.INVISIBLE);
+                        b3.setVisibility(View.INVISIBLE);
+                        b4.setVisibility(View.INVISIBLE);
+                    }
                 int hpT=hpPlayer.getProgress();
+                int hpTT=hpEnemy.getProgress();
+                if(sound==0){int xd=7;}
+                else{if(hpT<100||hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakd;
                 hpPlayer.setProgress(hpT);
                 String noweZycieMoje = "GRACZ: " + Integer.toString(hpPlayer.getProgress()) + "/" + hpP;
@@ -693,7 +1160,7 @@ public class NewGame extends AppCompatActivity {
                     zmianaTla(d,"PH");
                 }
                 tv.setText("Rywal wykonał: "+ jakiAtak(d));
-                listOfMoves.add("Twój rywal wykonał: "+ jakiAtak(d)+ " za " + Integer.toString(poziomTrundosci(str1,"E",silaAtaku(str,a)))+ " punktów obrażeń");
+                listOfMoves.add("Twój rywal wykonał: "+ jakiAtak(d)+ " za " + Integer.toString(poziomTrundosci(str1,"E",silaAtaku(a)))+ " punktów obrażeń");
                 if(hpPlayer.getProgress()>140) {
                     d = rand.nextInt(10);
                 }
@@ -707,103 +1174,215 @@ public class NewGame extends AppCompatActivity {
                 {
                     d=rand.nextInt(20)+10;
                 }
-                atakd = poziomTrundosci(str1,"E",silaAtaku(str,d));
+                atakd = poziomTrundosci(str1,"E",silaAtaku(d));
                 PA++;
                 if (PA == 3) {
                     inicjatywa = 0;
-                    b1.setVisibility(View.VISIBLE);
-                    b2.setVisibility(View.VISIBLE);
-                    b3.setVisibility(View.VISIBLE);
-                    b4.setVisibility(View.INVISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            b1.setVisibility(View.VISIBLE);
+                            b2.setVisibility(View.VISIBLE);
+                            b3.setVisibility(View.VISIBLE);
+                            b4.setVisibility(View.INVISIBLE);
+                        }
+                    }, 5000);
                 }
                 if (hpPlayer.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.INVISIBLE);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.VISIBLE);
+                                    }
+                                }, 5000);
+                                iv.setImageResource(R.drawable.tcwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                            });
+                        }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Przegrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} }
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.INVISIBLE);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.VISIBLE);
+                                    }
+                                }, 5000);
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Przegrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }}
                 if (hpEnemy.getProgress() == 0) {
                     if (str.equals("PH")) {
-                        iv.setImageResource(R.drawable.phwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });}
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.INVISIBLE);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.VISIBLE);
+                                    }
+                                }, 5000);
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
                     if (str.equals("TC")) {
-                        iv.setImageResource(R.drawable.tcwin);
-                        tv.setText("Wygrana przez Knock-Out");
-                        b1.setVisibility(View.INVISIBLE);
-                        b2.setVisibility(View.INVISIBLE);
-                        b3.setVisibility(View.INVISIBLE);
-                        b4.setVisibility(View.VISIBLE);
-                        b4.setText("przejdź do podsumowania");
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.VISIBLE);
+                            }
+                        }, 5000);
+                        b4.setText("KONIEC WALKI!");
                         b4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(getApplicationContext(),Summary.class);
-                                intent.putExtra("difficulty",str1);
-                                intent.putExtra("hpE",hpEnemy.getProgress());
-                                intent.putExtra("hpP",hpPlayer.getProgress());
-                                intent.putStringArrayListExtra("lista Akcji",listOfMoves);
-                                intent.putExtra("sound",sound);
-                                startActivity(intent);
-                            }
-                        });} } } } });
+                                b1.setVisibility(View.INVISIBLE);
+                                b2.setVisibility(View.INVISIBLE);
+                                b3.setVisibility(View.INVISIBLE);
+                                b4.setVisibility(View.INVISIBLE);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        b1.setVisibility(View.INVISIBLE);
+                                        b2.setVisibility(View.INVISIBLE);
+                                        b3.setVisibility(View.INVISIBLE);
+                                        b4.setVisibility(View.VISIBLE);
+                                    }
+                                }, 5000);
+                                iv.setImageResource(R.drawable.phwin);
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                b4.setText("Przejdź do podsumowania");
+                                b4.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(getApplicationContext(),Summary.class);
+                                        intent.putExtra("difficulty",str1);
+                                        intent.putExtra("hpE",hpEnemy.getProgress());
+                                        intent.putExtra("hpP",hpPlayer.getProgress());
+                                        intent.putStringArrayListExtra("lista Akcji",listOfMoves);
+                                        intent.putExtra("sound",sound);
+                                        startActivity(intent);
+                                    }
+                                });}
+                        });
+                    }
+                }
+                }
+            }
+        }
+        );
     }
+
     @Override
     protected  void onResume()
     {
-        BackgroundSoundService.resume();
         super.onResume();
+        if(x>0) {
+            BackgroundSoundService.resume();
+            BackgroundSoundService.updateSound(sound/20,sound/20);
+        }
+        x++;
     }
     @Override
     protected void onPause()
@@ -1124,11 +1703,11 @@ public class NewGame extends AppCompatActivity {
         if (v.equals("E")) {
             if(who.equals("P"))
             {
-                atak = atak+2;
+                atak=atak+2;
             }
             else
             {
-                atak = atak-2;
+                atak=atak-2;
                 if(atak<0)
                 {
                     atak=1;
@@ -1137,13 +1716,13 @@ public class NewGame extends AppCompatActivity {
         } else if (v.equals("H")) {
             if(who.equals("E"))
             {
-                atak = atak+1;
+                atak=atak+1;
             }
         }
         return atak;
     }
 
-    int silaAtaku(String v,int value) {
+    int silaAtaku(int value) {
         Random rand = new Random();
         int atak = 0;
         switch (value) {
@@ -1274,41 +1853,3 @@ public class NewGame extends AppCompatActivity {
 }
 
 
-         /* if(start==1) {
-              String l="";
-              b4.setText("Dalej");
-              if(str.equals("TC"))
-              {
-                  iv.setImageResource(R.drawable.tcentry);
-                  l = "Pierwszym zawodnikiem będzie uosobienie umiejętności ringowych - Technician!";
-              }
-              else{
-                  iv.setImageResource(R.drawable.phentry);
-                  l = "Pierwszym zawodnikiem będzie najsilniejszy człowiek świata - Powerhouse!";
-              }
-              tv.setText(l);
-              b4.setOnClickListener(new View.OnClickListener() {
-                  @Override
-                  public void onClick(View view) {
-
-                  }}); }
-            if(start==2)
-            {
-                String l="";
-                b4.setText("Dalej");
-                if(str.equals("TC"))
-                {
-                    iv.setImageResource(R.drawable.phentry);
-                    l = "Jego rywalem będzie najsilniejszy człowiek świata - Powerhouse!";
-                }
-                else{
-                    iv.setImageResource(R.drawable.tcentry);
-                    l = "Jego rywalem będzie uosobienie umiejętności ringowych - Technician!";
-                }
-                tv.setText(l);
-                b4.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }}); }
-            start++;} */

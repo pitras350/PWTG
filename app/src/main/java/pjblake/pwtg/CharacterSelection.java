@@ -18,7 +18,6 @@ public class CharacterSelection extends AppCompatActivity{
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selection);
-
         final GifImageButton b1 = findViewById(R.id.technicalB);
         final GifImageButton b2 = findViewById(R.id.powerhouseB);
         final TextView title = findViewById(R.id.main_title);
@@ -27,23 +26,13 @@ public class CharacterSelection extends AppCompatActivity{
         final Button b5 = findViewById(R.id.hard);
         final Button b6 = findViewById(R.id.backselect);
         b3.setVisibility(View.INVISIBLE); b4.setVisibility(View.INVISIBLE); b5.setVisibility(View.INVISIBLE);
-        //b3,b3,b5 -> buttony do poziomów trudności
+        //b3,b4,b5 -> buttony do poziomów trudności
         final TextView tv = findViewById(R.id.test);
-        sound = getIntent().getIntExtra("sound",2);
-        Intent svc=new Intent(this, BackgroundSoundService.class);
-        if(sound==0)
-        {
-            startService(svc);
-            BackgroundSoundService.pause();
-        }
-        else
-        {
-            startService(svc);
-            BackgroundSoundService.resume();
-        }
+        sound = getIntent().getIntExtra("sound",11);
+        if(sound==0) { BackgroundSoundService.pause(); }
+        else { BackgroundSoundService.resume();}
         final Intent intent = new Intent(this,NewGame.class);
         final Intent intent1 = new Intent(this,MainActivity.class);
-        super.onStart();
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,19 +105,11 @@ public class CharacterSelection extends AppCompatActivity{
     }
 
     @Override
-    protected void onStart() {
-        if(sound==0)
-        {
-            BackgroundSoundService.pause();
-        }
-        super.onStart();
-    }
-
-    @Override
     protected  void onResume()
     {
             if (x > 0) {
                 BackgroundSoundService.resume();
+                BackgroundSoundService.updateSound(sound/20,sound/20);
             }
             x++;
             super.onResume();
@@ -137,8 +118,6 @@ public class CharacterSelection extends AppCompatActivity{
     protected void onPause()
     {
         BackgroundSoundService.pause();
-        //Intent svc = new Intent(this,BackgroundSoundService.class);
-        //stopService(svc);
         super.onPause();
     }
     @Override

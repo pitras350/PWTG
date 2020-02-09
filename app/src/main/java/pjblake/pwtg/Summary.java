@@ -11,7 +11,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class Summary extends AppCompatActivity {
-
+    int x=0;
+    int sound;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,10 +20,13 @@ public class Summary extends AppCompatActivity {
         TextView tv = findViewById(R.id.podsumowanie);
         Button bt = findViewById(R.id.button3);
         String lista="";
-        final int sound = getIntent().getIntExtra("sound",0);
+
+        sound = getIntent().getIntExtra("sound",11);
+        if(sound==0) { BackgroundSoundService.pause(); }
+        else { BackgroundSoundService.resume();}
         final ArrayList<String>moves = getIntent().getStringArrayListExtra("lista Akcji");
-        int hpE= getIntent().getIntExtra("hpE",0);
-        int hpP= getIntent().getIntExtra("hpP",0);
+        int hpE=getIntent().getIntExtra("hpE",0);
+        int hpP=getIntent().getIntExtra("hpP",0);
         if(hpE>hpP)
         {
             lista="PORAŻKA! \n \n";
@@ -42,6 +46,7 @@ public class Summary extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                 intent.putExtra("sound",sound);
+                intent.putExtra("muzyka",4);
                 startActivity(intent);
             }
         });
@@ -50,8 +55,12 @@ public class Summary extends AppCompatActivity {
     @Override
     protected  void onResume()
     {
-        BackgroundSoundService.resume();
         super.onResume();
+        if(x>0) {
+            BackgroundSoundService.resume();
+            BackgroundSoundService.updateSound(sound/20,sound/20);
+        }
+        x++;
     }
     @Override
     protected void onPause()
