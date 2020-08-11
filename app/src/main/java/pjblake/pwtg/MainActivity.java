@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView tv;
-    Button bt1,bt2,bt3,bt4;
+    Button btCharacter,btOptions,btHow,btSound;
     int s=1;
     int x=0;
     int xd=5;
@@ -28,69 +28,69 @@ public class MainActivity extends AppCompatActivity {
         Intent svc=new Intent(this, BackgroundSoundService.class);
         startService(svc);
         int muzyka = getIntent().getIntExtra("muzyka",5);
-        bt4 = findViewById(R.id.soundmenu);
+        btSound = findViewById(R.id.soundmenu);
         sound=getIntent().getIntExtra("sound",5);
 
         if(sound==0)
         {
             BackgroundSoundService.updateSound(0,0);
-            bt4.setBackgroundResource(R.drawable.soundoff);
+            btSound.setBackgroundResource(R.drawable.soundoff);
 
         }else
         {
             xd = muzyka;
             if(xd!=5){xd = new BackgroundSoundService().changeSong(MainActivity.this,4,sound);}
-            bt4.setBackgroundResource(R.drawable.soundon);
+            btSound.setBackgroundResource(R.drawable.soundon);
         }
         toolbar = findViewById(R.id.main_bar);
         tv = findViewById(R.id.main_title);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final Intent intent,intent1,intent2;
+        final Intent intentCharacter,intentOptions,intentHow;
         //wybór postaci
-        bt1 = findViewById(R.id.button);
-        intent = new Intent(this,CharacterSelection.class);
-        bt1.setOnClickListener(new View.OnClickListener() {
+        btCharacter = findViewById(R.id.button);
+        intentCharacter = new Intent(this,CharacterSelection.class);
+        btCharacter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GifImageView z = findViewById(R.id.zmianaAni);
                 z.setImageResource(R.drawable.chopp);
-                intent.putExtra("sound",sound);
-                startActivity(intent);
+                intentCharacter.putExtra("sound",sound);
+                startActivity(intentCharacter);
             }
         });
         //opcje
-        bt2 = findViewById(R.id.button1);
-        intent1 = new Intent(this,Options.class);
-        bt2.setOnClickListener(new View.OnClickListener() {
+        btOptions = findViewById(R.id.button1);
+        intentOptions = new Intent(this,Options.class);
+        btOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GifImageView z = findViewById(R.id.zmianaAni);
                 z.setImageResource(R.drawable.kickp);
-                intent1.putExtra("sound",sound);
-                startActivity(intent1);
+                intentOptions.putExtra("sound",sound);
+                startActivity(intentOptions);
             }
         });
         //jak grać
-        bt3 = findViewById(R.id.button2);
-        intent2 = new Intent(this,HowTo.class);
-        bt3.setOnClickListener(new View.OnClickListener() {
+        btHow = findViewById(R.id.button2);
+        intentHow = new Intent(this,HowTo.class);
+        btHow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GifImageView z = findViewById(R.id.zmianaAni);
                 z.setImageResource(R.drawable.punchp);
-                intent2.putExtra("sound",sound);
-                startActivity(intent2);
+                intentHow.putExtra("sound",sound);
+                startActivity(intentHow);
             }
         });
 
-        bt4.setOnClickListener(new View.OnClickListener() {
+        btSound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(s==0)
                 {
                     BackgroundSoundService.resume();
-                    bt4.setBackgroundResource(R.drawable.soundon);
+                    btSound.setBackgroundResource(R.drawable.soundon);
                     s=1; sound=getIntent().getIntExtra("sound",5);
                     if(getIntent().getIntExtra("sound",5)==0) { sound=5; }
                     BackgroundSoundService.updateSound(sound/20f,sound/20f);
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     BackgroundSoundService.pause();
-                    bt4.setBackgroundResource(R.drawable.soundoff);
+                    btSound.setBackgroundResource(R.drawable.soundoff);
                     s=0; sound=0;
                 }
             }

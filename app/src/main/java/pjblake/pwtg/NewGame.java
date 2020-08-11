@@ -29,7 +29,8 @@ public class NewGame extends AppCompatActivity {
     int start=0;
     int inicjatywa;
     int ataka,atakb,atakc,atakd;
-    int a,b,c,d;
+    int numerAtakuA,numerAtakuB,numerAtakuC,numerAtakuD;
+    int goodContition=140,tiredCondition=100,exhaustedCondition=60;
     int xd;
     int x=0;
     int sound;
@@ -106,79 +107,96 @@ public class NewGame extends AppCompatActivity {
                 int hpT = hpEnemy.getProgress();
                 int hpTT = hpPlayer.getProgress();
                 if(sound==0){int xd=7;}
-                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
+                else{ if(hpT<tiredCondition || hpTT<tiredCondition){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT = hpT - ataka;
                 hpEnemy.setProgress(hpT);
-                if (hpEnemy.getProgress() <= 133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
-                if (hpEnemy.getProgress() <= 66) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
                 String noweZycieRywala = "RYWAL: " + Integer.toString(hpEnemy.getProgress()) + "/" + hpE;
                 hpRival.setText(noweZycieRywala);
+                zmianaTla(numerAtakuA,str);
+                Calculations player = new Calculations(str1,"P");
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(numerAtakuA));
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(numerAtakuA)+ " za " + Integer.toString(player.attackCalculator(player.attackValue(numerAtakuA)))+ " punktów obrażeń");
                 Random rand = new Random();
-                zmianaTla(a,str);
-                tv.setText("Twój zawodnik wykonał: " + jakiAtak(a));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(a)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(a)))+ " punktów obrażeń");
-                if(hpEnemy.getProgress()>140) {
-                    a = rand.nextInt(10);
-                    b = rand.nextInt(10);
-                    c = rand.nextInt(10);
-                    if (a == b) {
-                        do { b = rand.nextInt(10); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(10); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(10); }
-                        while (a == c || a==b); }
+                int tabPOM[] = new int[30];
+                int tabATK[] = new int[3];
+                int range1=10,range2=20,range3=30;
+                int losuj;
+                if(hpEnemy.getProgress()>goodContition) {
+                    for(int i=0; i<10; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range1);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range1-1];
+                        range1--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()>100 && hpEnemy.getProgress()<=140) {
-                    a = rand.nextInt(20);
-                    b = rand.nextInt(20);
-                    c = rand.nextInt(20);
-                    if (a == b) {
-                        do { b = rand.nextInt(20); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()>tiredCondition && hpEnemy.getProgress()<=goodContition) {
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=100 && hpEnemy.getProgress()>60){
-                    a = rand.nextInt(30);
-                    b = rand.nextInt(30);
-                    c = rand.nextInt(30);
-                    if (a == b) {
-                        do { b = rand.nextInt(30); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(30); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(30); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=tiredCondition && hpEnemy.getProgress()>exhaustedCondition){
+                    for(int i=0; i<30; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range3);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range3-1];
+                        range3--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=60){
-                    a = rand.nextInt(20)+10;
-                    b = rand.nextInt(20)+10;
-                    c = rand.nextInt(20)+10;
-                    if (a == b) {
-                        do { b = rand.nextInt(20)+10; }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20)+10; }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20)+10; }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=exhaustedCondition){
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i+10;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                b1.setText(jakiAtak(a));
-                b2.setText(jakiAtak(b));
-                b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
+                b1.setText(jakiAtak(numerAtakuA));
+                b2.setText(jakiAtak(numerAtakuB));
+                b3.setText(jakiAtak(numerAtakuC));
+                ataka= player.attackCalculator(player.attackValue(numerAtakuA));
+                atakb= player.attackCalculator(player.attackValue(numerAtakuB));
+                atakc= player.attackCalculator(player.attackValue(numerAtakuC));
                 PA--;
                 if (PA == 0) {
                     inicjatywa = 1;
@@ -342,7 +360,7 @@ public class NewGame extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 iv.setImageResource(R.drawable.phwin);
-                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
                                 b4.setText("Przejdź do podsumowania");
                                 b4.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -400,79 +418,97 @@ public class NewGame extends AppCompatActivity {
                 int hpT = hpEnemy.getProgress();
                 int hpTT = hpPlayer.getProgress();
                 if(sound==0){int xd=7;}
-                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
+                else{ if(hpT<tiredCondition || hpTT<tiredCondition){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakb;
                 hpEnemy.setProgress(hpT);
-                if(hpEnemy.getProgress()<=133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
-                if(hpEnemy.getProgress()<=66) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
                 String noweZycieRywala = "RYWAL: " + Integer.toString(hpEnemy.getProgress()) + "/" + hpE;
                 hpRival.setText(noweZycieRywala);
+                zmianaTla(numerAtakuB,str);
+                Calculations player = new Calculations(str1,"P");
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(numerAtakuB));
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(numerAtakuB)+ " za " + Integer.toString(player.attackCalculator(player.attackValue(numerAtakuB)))+ " punktów obrażeń");
                 Random rand = new Random();
-                zmianaTla(b,str);
-                tv.setText("Twój zawodnik wykonał: " + jakiAtak(b));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(b)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(b)))+ " punktów obrażeń");
-                if(hpEnemy.getProgress()>140) {
-                    a = rand.nextInt(10);
-                    b = rand.nextInt(10);
-                    c = rand.nextInt(10);
-                    if (a == b) {
-                        do { b = rand.nextInt(10); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(10); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(10); }
-                        while (a == c || a==b); }
+                int tabPOM[] = new int[30];
+                int tabATK[] = new int[3];
+                int range1=10,range2=20,range3=30;
+                int losuj;
+                if(hpEnemy.getProgress()>goodContition) {
+                    for(int i=0; i<10; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range1);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range1-1];
+                        range1--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()>100 && hpEnemy.getProgress()<=140) {
-                    a = rand.nextInt(20);
-                    b = rand.nextInt(20);
-                    c = rand.nextInt(20);
-                    if (a == b) {
-                        do { b = rand.nextInt(20); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()>tiredCondition && hpEnemy.getProgress()<=goodContition) {
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=100 && hpEnemy.getProgress()>60){
-                    a = rand.nextInt(30);
-                    b = rand.nextInt(30);
-                    c = rand.nextInt(30);
-                    if (a == b) {
-                        do { b = rand.nextInt(30); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(30); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(30); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=tiredCondition && hpEnemy.getProgress()>exhaustedCondition){
+                    for(int i=0; i<30; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range3);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range3-1];
+                        range3--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=60){
-                    a = rand.nextInt(20)+10;
-                    b = rand.nextInt(20)+10;
-                    c = rand.nextInt(20)+10;
-                    if (a == b) {
-                        do { b = rand.nextInt(20)+10; }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20)+10; }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20)+10; }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=exhaustedCondition){
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i+10;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                b1.setText(jakiAtak(a));
-                b2.setText(jakiAtak(b));
-                b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
+                b1.setText(jakiAtak(numerAtakuA));
+                b2.setText(jakiAtak(numerAtakuB));
+                b3.setText(jakiAtak(numerAtakuC));
+
+                ataka= player.attackCalculator(player.attackValue(numerAtakuA));
+                atakb= player.attackCalculator(player.attackValue(numerAtakuB));
+                atakc= player.attackCalculator(player.attackValue(numerAtakuC));
 
                 PA--;
                 if (PA == 0) {
@@ -637,7 +673,7 @@ public class NewGame extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 iv.setImageResource(R.drawable.phwin);
-                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
                                 b4.setText("Przejdź do podsumowania");
                                 b4.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -695,79 +731,96 @@ public class NewGame extends AppCompatActivity {
                 int hpT = hpEnemy.getProgress();
                 int hpTT = hpPlayer.getProgress();
                 if(sound==0){int xd=7;}
-                else{ if(hpT<100 || hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
+                else{ if(hpT<tiredCondition || hpTT<tiredCondition){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakc;
                 hpEnemy.setProgress(hpT);
-                if(hpEnemy.getProgress()<=133) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
-                if(hpEnemy.getProgress()<=66) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpEnemy.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= goodContition) { hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= tiredCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN); }
+                if (hpPlayer.getProgress() <= exhaustedCondition) { hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN); }
                 String noweZycieRywala = "RYWAL: " + Integer.toString(hpEnemy.getProgress()) + "/" + hpE;
                 hpRival.setText(noweZycieRywala);
-                zmianaTla(c,str);
-                tv.setText("Twój zawodnik wykonał: " + jakiAtak(c));
-                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(c)+ " za " + Integer.toString(poziomTrundosci(str1,"P",silaAtaku(c)))+ " punktów obrażeń");
+                zmianaTla(numerAtakuC,str);
+                Calculations player = new Calculations(str1,"P");
+                tv.setText("Twój zawodnik wykonał: " + jakiAtak(numerAtakuC));
+                listOfMoves.add("Twój zawodnik wykonał: "+ jakiAtak(numerAtakuC)+ " za " + Integer.toString(player.attackCalculator(player.attackValue(numerAtakuC)))+ " punktów obrażeń");
                 Random rand = new Random();
-                if(hpEnemy.getProgress()>140) {
-                    a = rand.nextInt(10);
-                    b = rand.nextInt(10);
-                    c = rand.nextInt(10);
-                    if (a == b) {
-                        do { b = rand.nextInt(10); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(10); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(10); }
-                        while (a == c || a==b); }
+                int tabPOM[] = new int[30];
+                int tabATK[] = new int[3];
+                int range1=10,range2=20,range3=30;
+                int losuj;
+                if(hpEnemy.getProgress()>goodContition) {
+                    for(int i=0; i<10; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range1);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range1-1];
+                        range1--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()>100 && hpEnemy.getProgress()<=140) {
-                    a = rand.nextInt(20);
-                    b = rand.nextInt(20);
-                    c = rand.nextInt(20);
-                    if (a == b) {
-                        do { b = rand.nextInt(20); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()>tiredCondition && hpEnemy.getProgress()<=goodContition) {
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=100 && hpEnemy.getProgress()>60){
-                    a = rand.nextInt(30);
-                    b = rand.nextInt(30);
-                    c = rand.nextInt(30);
-                    if (a == b) {
-                        do { b = rand.nextInt(30); }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(30); }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(30); }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=tiredCondition && hpEnemy.getProgress()>exhaustedCondition){
+                    for(int i=0; i<30; i++)
+                    {
+                        tabPOM[i]=i;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range3);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range3-1];
+                        range3--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                else if(hpEnemy.getProgress()<=60){
-                    a = rand.nextInt(20)+10;
-                    b = rand.nextInt(20)+10;
-                    c = rand.nextInt(20)+10;
-                    if (a == b) {
-                        do { b = rand.nextInt(20)+10; }
-                        while (a == b || b==c); }
-                    if (b == c) {
-                        do { c = rand.nextInt(20)+10; }
-                        while (b == c || c==a); }
-                    if (a == c) {
-                        do { a = rand.nextInt(20)+10; }
-                        while (a == c || a==b); }
+                else if(hpEnemy.getProgress()<=exhaustedCondition){
+                    for(int i=0; i<20; i++)
+                    {
+                        tabPOM[i]=i+10;
+                    }
+                    for (int i=0; i<3; i++)
+                    {
+                        losuj=rand.nextInt(range2);
+                        tabATK[i]=tabPOM[losuj];
+                        tabPOM[losuj]=tabPOM[range2-1];
+                        range2--;
+                    }
+                    numerAtakuA = tabATK[0];
+                    numerAtakuB = tabATK[1];
+                    numerAtakuC = tabATK[2];
                 }
-                b1.setText(jakiAtak(a));
-                b2.setText(jakiAtak(b));
-                b3.setText(jakiAtak(c));
-                ataka = poziomTrundosci(str1,"P",silaAtaku(a));
-                atakb = poziomTrundosci(str1,"P",silaAtaku(b));
-                atakc = poziomTrundosci(str1,"P",silaAtaku(c));
+                b1.setText(jakiAtak(numerAtakuA));
+                b2.setText(jakiAtak(numerAtakuB));
+                b3.setText(jakiAtak(numerAtakuC));
+                ataka= player.attackCalculator(player.attackValue(numerAtakuA));
+                atakb= player.attackCalculator(player.attackValue(numerAtakuB));
+                atakc= player.attackCalculator(player.attackValue(numerAtakuC));
                 PA--;
                 if (PA == 0) {
                     inicjatywa = 1;
@@ -931,7 +984,7 @@ public class NewGame extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 iv.setImageResource(R.drawable.phwin);
-                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
                                 b4.setText("Przejdź do podsumowania");
                                 b4.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -1084,35 +1137,89 @@ public class NewGame extends AppCompatActivity {
                         tv.setText(k);
                         PA = 0;
                     }
-                    a = rand.nextInt(10);
-                    b = rand.nextInt(10);
-                    c = rand.nextInt(10);
-                    d = rand.nextInt(10);
-                    if (a == b) {
-                        do {
-                            b = rand.nextInt(10);
+                    Random rand = new Random();
+                    int tabPOM[] = new int[30];
+                    int tabATK[] = new int[3];
+                    int range1=10,range2=20,range3=30;
+                    int losuj;
+                    if(hpPlayer.getProgress()>goodContition) {
+                        for(int i=0; i<10; i++)
+                        {
+                            tabPOM[i]=i;
                         }
-                        while (a == b || b == c);
-                    }
-                    if (b == c) {
-                        do {
-                            c = rand.nextInt(10);
+                        for (int i=0; i<3; i++)
+                        {
+                            losuj=rand.nextInt(range1);
+                            tabATK[i]=tabPOM[losuj];
+                            tabPOM[losuj]=tabPOM[range1-1];
+                            range1--;
                         }
-                        while (b == c || c == a);
+                        numerAtakuA = tabATK[0];
+                        numerAtakuB = tabATK[1];
+                        numerAtakuC = tabATK[2];
                     }
-                    if (a == c) {
-                        do {
-                            a = rand.nextInt(10);
+                    if(hpPlayer.getProgress()<=goodContition && hpPlayer.getProgress()>tiredCondition) {
+                        for(int i=0; i<20; i++)
+                        {
+                            tabPOM[i]=i;
                         }
-                        while (a == c || a == b);
+                        for (int i=0; i<3; i++)
+                        {
+                            losuj=rand.nextInt(range2);
+                            tabATK[i]=tabPOM[losuj];
+                            tabPOM[losuj]=tabPOM[range2-1];
+                            range2--;
+                        }
+                        numerAtakuA = tabATK[0];
+                        numerAtakuB = tabATK[1];
+                        numerAtakuC = tabATK[2];
                     }
-                    b1.setText(jakiAtak(a));
-                    b2.setText(jakiAtak(b));
-                    b3.setText(jakiAtak(c));
-                    ataka = poziomTrundosci(str1, "P", silaAtaku(a));
-                    atakb = poziomTrundosci(str1, "P", silaAtaku(b));
-                    atakc = poziomTrundosci(str1, "P", silaAtaku(c));
-                    atakd = poziomTrundosci(str1, "E", silaAtaku(d));
+                    if(hpPlayer.getProgress()<=tiredCondition && hpPlayer.getProgress()>exhaustedCondition) {
+                        for(int i=0; i<30; i++)
+                        {
+                            tabPOM[i]=i;
+                        }
+                        for (int i=0; i<3; i++)
+                        {
+                            losuj=rand.nextInt(range3);
+                            tabATK[i]=tabPOM[losuj];
+                            tabPOM[losuj]=tabPOM[range3-1];
+                            range3--;
+                        }
+                        numerAtakuA = tabATK[0];
+                        numerAtakuB = tabATK[1];
+                        numerAtakuC = tabATK[2];
+                    }
+                    if(hpPlayer.getProgress()<=exhaustedCondition) {
+                        for(int i=0; i<20; i++)
+                        {
+                            tabPOM[i]=i+10;
+                        }
+                        for (int i=0; i<3; i++)
+                        {
+                            losuj=rand.nextInt(range2);
+                            tabATK[i]=tabPOM[losuj];
+                            tabPOM[losuj]=tabPOM[range2-1];
+                            range2--;
+                        }
+                        numerAtakuA = tabATK[0];
+                        numerAtakuB = tabATK[1];
+                        numerAtakuC = tabATK[2];
+                    }
+                    numerAtakuD = rand.nextInt(10);
+                    b1.setText(jakiAtak(numerAtakuA));
+                    b2.setText(jakiAtak(numerAtakuB));
+                    b3.setText(jakiAtak(numerAtakuC));
+                    Calculations player = new Calculations(str1,"P");
+                    ataka= player.attackCalculator(player.attackValue(numerAtakuA));
+                    atakb= player.attackCalculator(player.attackValue(numerAtakuB));
+                    atakc= player.attackCalculator(player.attackValue(numerAtakuC));
+                    Calculations enemy = new Calculations(str1,"E");
+                    atakd= enemy.attackCalculator(enemy.attackValue(numerAtakuD));
+                    /*ataka = poziomTrudnosci(str1, "P", silaAtaku(numerAtakuA));
+                    atakb = poziomTrudnosci(str1, "P", silaAtaku(numerAtakuB));
+                    atakc = poziomTrudnosci(str1, "P", silaAtaku(numerAtakuC));
+                    atakd = poziomTrudnosci(str1, "E", silaAtaku(numerAtakuD));*/
                     hpMine.setText(R.string.player_max_hp);
                     hpRival.setText(R.string.enemy_max_hp);
                     start++;
@@ -1141,40 +1248,50 @@ public class NewGame extends AppCompatActivity {
                 int hpT=hpPlayer.getProgress();
                 int hpTT=hpEnemy.getProgress();
                 if(sound==0){int xd=7;}
-                else{if(hpT<100||hpTT<100){ if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
+                else{if(hpT<tiredCondition||hpTT<tiredCondition)
+                {if(xd!=4){xd = new BackgroundSoundService().changeSong(NewGame.this,3,sound);}}}
                 hpT=hpT-atakd;
                 hpPlayer.setProgress(hpT);
                 String noweZycieMoje = "GRACZ: " + Integer.toString(hpPlayer.getProgress()) + "/" + hpP;
                 hpMine.setText(noweZycieMoje);
-                if(hpPlayer.getProgress()<=133) { hpPlayer.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN);
-                }
-                if(hpPlayer.getProgress()<=66) { hpPlayer.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-                }
+                if (hpEnemy.getProgress() <= goodContition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN);}
+                if (hpEnemy.getProgress() <= tiredCondition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN);}
+                if (hpEnemy.getProgress() <= exhaustedCondition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);}
+                if (hpPlayer.getProgress() <= goodContition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN);}
+                if (hpPlayer.getProgress() <= tiredCondition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.rgb(255,125,0), PorterDuff.Mode.SRC_IN);}
+                if (hpPlayer.getProgress() <= exhaustedCondition)
+                {hpEnemy.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);}
                 Random rand = new Random();
                 if(str.equals("PH"))
                 {
-                    zmianaTla(d,"TC");
+                    zmianaTla(numerAtakuD,"TC");
                 }
                 else
                 {
-                    zmianaTla(d,"PH");
+                    zmianaTla(numerAtakuD,"PH");
                 }
-                tv.setText("Rywal wykonał: "+ jakiAtak(d));
-                listOfMoves.add("Twój rywal wykonał: "+ jakiAtak(d)+ " za " + Integer.toString(poziomTrundosci(str1,"E",silaAtaku(a)))+ " punktów obrażeń");
-                if(hpPlayer.getProgress()>140) {
-                    d = rand.nextInt(10);
+                tv.setText("Rywal wykonał: "+ jakiAtak(numerAtakuD));
+                Calculations enemy = new Calculations(str1,"E");
+                listOfMoves.add("Twój rywal wykonał: "+ jakiAtak(numerAtakuD)+ " za " + Integer.toString(enemy.attackCalculator(enemy.attackValue(numerAtakuD)))+ " punktów obrażeń");
+                if(hpPlayer.getProgress()>goodContition) {
+                    numerAtakuD = rand.nextInt(10);
                 }
-                else if(hpPlayer.getProgress()<=140 && hpPlayer.getProgress()>100) {
-                    d = rand.nextInt(20);
+                else if(hpPlayer.getProgress()<=goodContition && hpPlayer.getProgress()>tiredCondition) {
+                    numerAtakuD = rand.nextInt(20);
                 }
-                else if(hpPlayer.getProgress()<=100 && hpPlayer.getProgress()>60){
-                    d = rand.nextInt(30);
+                else if(hpPlayer.getProgress()<=tiredCondition && hpPlayer.getProgress()>exhaustedCondition){
+                    numerAtakuD = rand.nextInt(30);
                 }
-                else if(hpPlayer.getProgress()<=60)
+                else if(hpPlayer.getProgress()<=exhaustedCondition)
                 {
-                    d=rand.nextInt(20)+10;
+                    numerAtakuD=rand.nextInt(20)+10;
                 }
-                atakd = poziomTrundosci(str1,"E",silaAtaku(d));
+                atakd= enemy.attackCalculator(enemy.attackValue(numerAtakuD));
                 PA++;
                 if (PA == 3) {
                     inicjatywa = 0;
@@ -1351,7 +1468,7 @@ public class NewGame extends AppCompatActivity {
                                     }
                                 }, 5000);
                                 iv.setImageResource(R.drawable.phwin);
-                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Powerhouse!");
+                                tv.setText("Wygrana przez Knock-Out, nowym mistrzem PWTG zostaje: Technician!");
                                 b4.setText("Przejdź do podsumowania");
                                 b4.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -1698,7 +1815,7 @@ public class NewGame extends AppCompatActivity {
         listaakcji.clear();
         return nazwa;
     }
-    int poziomTrundosci(String v,String who,int value) {
+    /*int poziomTrudnosci(String v,String who,int value) {
         int atak = value;
         if (v.equals("E")) {
             if(who.equals("P"))
@@ -1849,7 +1966,7 @@ public class NewGame extends AppCompatActivity {
 
             }
         return atak;
-    }
+    }*/
 }
 
 

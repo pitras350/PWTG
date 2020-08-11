@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,8 +20,9 @@ public class Summary extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         TextView tv = findViewById(R.id.podsumowanie);
+        ListView listView = findViewById(R.id.listView);
+        ListAdapter mAdapter;
         Button bt = findViewById(R.id.button3);
-        String lista="";
 
         sound = getIntent().getIntExtra("sound",11);
         if(sound==0) { BackgroundSoundService.pause(); }
@@ -27,20 +30,24 @@ public class Summary extends AppCompatActivity {
         final ArrayList<String>moves = getIntent().getStringArrayListExtra("lista Akcji");
         int hpE=getIntent().getIntExtra("hpE",0);
         int hpP=getIntent().getIntExtra("hpP",0);
+        ArrayList<Attacks> attackList = new ArrayList<>();
         if(hpE>hpP)
         {
-            lista="PORAŻKA! \n \n";
+            attackList.add(new Attacks("PORAŻKA! \n \n"));
         }
         else
         {
-            lista="ZWYCIĘSTWO! \n \n";
+            attackList.add(new Attacks("PORAŻKA! \n \n"));
         }
+
         for(int i=0; i<moves.size(); i++)
         {
-            lista=lista+moves.get(i)+"\n";
+            attackList.add(new Attacks(moves.get(i)));
         }
-        tv.setText(lista);
-        tv.setMovementMethod(new ScrollingMovementMethod());
+        mAdapter = new ListAdapter(this,attackList);
+        listView.setAdapter(mAdapter);
+        //tv.setText(lista);
+        //tv.setMovementMethod(new ScrollingMovementMethod());
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
